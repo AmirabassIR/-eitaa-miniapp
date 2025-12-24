@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎮 خرید سی‌پی | فروشگاه نظامی عماد</title>
+<style>
+    @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css');
+
+    body {
+        font-family: 'Vazir', sans-serif;
+        direction: rtl;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #0a0a2a 0%, #1a1a4a 100%);
+        color: #fff;
+        min-height: 100vh;
+    }
+
+    .header {
+        text-align: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        border-bottom: 3px solid #2196F3;
+    }
+
+    .header h1 {
+        color: #2196F3;
+        margin: 0;
+        font-size: 32px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .header p {
+        color: #aaa;
+        margin: 10px 0 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: rgba(0,0,0,0.8);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        transition: all 0.3s ease;
+        border: 2px solid #2196F3;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+        border-color: #4FC3F7;
+    }
+
+    .card img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 15px;
+        border-radius: 50%;
+        border: 3px solid #2196F3;
+        background: rgba(255,255,255,0.1);
+        padding: 5px;
+    }
+
+    .card h3 {
+        color: #4FC3F7;
+        margin: 10px 0;
+        font-size: 20px;
+    }
+
+    .card p {
+        color: #ccc;
+        margin: 10px 0;
+        font-size: 14px;
+    }
+
+    .price {
+        font-size: 24px;
+        font-weight: bold;
+        color: #4CAF50;
+        margin: 15px 0;
+    }
+
+    .free {
+        color: #FFC107 !important;
+    }
+
+    .button {
+        display: inline-block;
+        background: linear-gradient(135deg, #2196F3, #1976D2);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .button:hover {
+        background: linear-gradient(135deg, #1976D2, #0D47A1);
+        transform: scale(1.05);
+    }
+
+    .game-button {
+        background: linear-gradient(135deg, #4CAF50, #2E7D32) !important;
+    }
+
+    .game-button:hover {
+        background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
+    }
+
+    /* بازی */
+    .game-section {
+        background: rgba(0,0,0,0.85);
+        border-radius: 20px;
+        padding: 30px;
+        margin: 30px 0;
+        border: 3px solid #4CAF50;
+        text-align: center;
+    }
+
+    .game-title {
+        color: #4CAF50;
+        font-size: 28px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .game-info {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .info-box {
+        background: rgba(255,255,255,0.1);
+        padding: 15px 25px;
+        border-radius: 10px;
+        min-width: 120px;
+    }
+
+    .info-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #FFC107;
+        margin: 5px 0;
+    }
+
+    .info-label {
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    .game-area {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 2px solid #333;
+        overflow: hidden;
+    }
+
+    .target {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: #FF5722;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        transition: all 0.2s;
+        user-select: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .target:hover {
+        transform: scale(1.1);
+    }
+
+    .controls {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .control-btn {
+        padding: 12px 25px;
+        border-radius: 8px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 16px;
+    }
+
+    .start-btn {
+        background: #2196F3;
+        color: white;
+    }
+
+    .reset-btn {
+        background: #FF9800;
+        color: white;
+    }
+
+    .claim-btn {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .claim-btn:disabled {
+        background: #666;
+        cursor: not-allowed;
+    }
+
+    .instructions {
+        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        text-align: right;
+        line-height: 1.8;
+    }
+
+    .instructions h4 {
+        color: #FFC107;
+        margin-top: 0;
+    }
+
+    /* خرید موفق */
+    .success-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .success-content {
+        background: rgba(0,0,0,0.95);
+        border: 3px solid #4CAF50;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .success-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* فوتتر */
+    .footer {
+        text-align: center;
+        padding: 20px;
+        background: rgba(0,0,0,0.8);
+        margin-top: 40px;
+        border-top: 2px solid #2196F3;
+    }
+
+    .back-btn {
+        display: inline-block;
+        background: #666;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+
+    /* رسپانسیو */
+    @media (max-width: 768px) {
+        .grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        
+        .game-area {
+            height: 250px;
+        }
+        
+        .info-box {
+            min-width: 100px;
+            padding: 10px 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header h1 {
+            font-size: 24px;
+        }
+        
+        .card {
+            padding: 15px;
+        }
+        
+        .controls {
+            flex-direction: column;
+        }
+        
+        .control-btn {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🎮 خرید سی‌پی | فروشگاه نظامی عماد</h1>
+    <p>خرید امن و سریع سی‌پی برای بازی‌های محبوب</p>
+</div>
+
+<div class="container">
+    <div class="grid">
+        <!-- محصولات سی‌پی -->
+        <div class="card">
+            <img src="https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg" alt="سی‌پی دوبل">
+            <h3>سی‌پی دوبل</h3>
+            <p>مبلغ خرید شما دوبرابر می‌شود!</p>
+            <div class="price">۵۰,۰۰۰ تومان</div>
+            <button class="button" onclick="buyProduct('سی‌پی دوبل', 50000)">🎯 خرید سریع</button>
+        </div>
+
+        <div class="card">
+            <img src="https://rengogame.com/wp-content/uploads/2025/08/battlepass-call-of-duty-mobile-2025.webp" alt="آفر ویژه">
+            <h3>آفر ویژه</h3>
+            <p>بسته کامل Battle Pass + 500 سی‌پی</p>
+            <div class="price">۷۵,۰۰۰ تومان</div>
+            <button class="button" onclick="buyProduct('آفر ویژه', 75000)">🌟 خرید ویژه</button>
+        </div>
+
+        <div class="card">
+            <img src="https://rengogame.com/wp-content/uploads/2023/09/free-cp-icon-rengogame-min.webp" alt="سی‌پی رایگان">
+            <h3>سی‌پی رایگان</h3>
+            <p>دریافت 80 سی‌پی با انجام بازی</p>
+            <div class="price free">🎁 کاملاً رایگان</div>
+            <button class="button game-button" onclick="showGame()">🎮 شروع بازی</button>
+        </div>
+
+        <div class="card">
+            <img src="https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp" alt="بسته طلایی">
+            <h3>بسته طلایی</h3>
+            <p>1200 سی‌پی + آیتم‌های خاص</p>
+            <div class="price">۱۲۰,۰۰۰ تومان</div>
+            <button class="button" onclick="buyProduct('بسته طلایی', 120000)">👑 خرید طلایی</button>
+        </div>
+
+        <div class="card">
+            <img src="https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp" alt="بسته نقره‌ای">
+            <h3>بسته نقره‌ای</h3>
+            <p>800 سی‌پی + آیتم‌های ویژه</p>
+            <div class="price">۸۰,۰۰۰ تومان</div>
+            <button class="button" onclick="buyProduct('بسته نقره‌ای', 80000)">🥈 خرید نقره‌ای</button>
+        </div>
+
+        <div class="card">
+            <img src="https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp" alt="بسته برنزی">
+            <h3>بسته برنزی</h3>
+            <p>400 سی‌پی + آیتم‌های معمولی</p>
+            <div class="price">۴۰,۰۰۰ تومان</div>
+            <button class="button" onclick="buyProduct('بسته برنزی', 40000)">🥉 خرید برنزی</button>
+        </div>
+    </div>
+
+    <!-- بخش بازی -->
+    <div id="gameSection" style="display: none;">
+        <div class="game-section">
+            <h2 class="game-title">🎮 بازی برای دریافت 80 سی‌پی رایگان</h2>
+            
+            <div class="game-info">
+                <div class="info-box">
+                    <div class="info-value" id="scoreDisplay">0</div>
+                    <div class="info-label">امتیاز شما</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-value" id="timeDisplay">30</div>
+                    <div class="info-label">ثانیه باقی‌مانده</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-value" id="targetsDisplay">0</div>
+                    <div class="info-label">هدف زده شده</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-value" id="neededScore">1000</div>
+                    <div class="info-label">امتیاز لازم</div>
+                </div>
+            </div>
+
+            <div class="game-area" id="gameArea">
+                <!-- هدف‌ها اینجا ایجاد می‌شوند -->
+            </div>
+
+            <div class="controls">
+                <button class="control-btn start-btn" id="startBtn" onclick="startGame()">▶️ شروع بازی</button>
+                <button class="control-btn reset-btn" onclick="resetGame()">🔄 بازی مجدد</button>
+                <button class="control-btn claim-btn" id="claimBtn" onclick="claimFreeCP()" disabled>🎁 دریافت 80 سی‌پی رایگان</button>
+            </div>
+
+            <div class="instructions">
+                <h4>🎯 راهنمای بازی:</h4>
+                <p>• روی هدف‌های قرمز رنگ کلیک کنید</p>
+                <p>• هر هدف 10 امتیاز دارد</p>
+                <p>• باید تا 1000 امتیاز برسید</p>
+                <p>• زمان بازی 30 ثانیه است</p>
+                <p>• بعد از رسیدن به 1000 امتیاز می‌توانید 80 سی‌پی رایگان دریافت کنید</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- بخش خرید موفق -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">🎉</div>
+            <h2 id="successTitle">خرید موفق!</h2>
+            <p id="successMessage"></p>
+            <p id="cpAmount" style="font-size: 24px; color: #4CAF50; margin: 20px 0;"></p>
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 20px 0;">
+                <p style="margin: 5px 0;">برای تکمیل خرید لطفاً به ایتا مراجعه کنید:</p>
+                <p style="color: #4FC3F7; font-weight: bold; font-size: 18px;">@www_313M</p>
+            </div>
+            <button class="button" onclick="closeSuccessModal()" style="margin-top: 20px;">باشه</button>
+        </div>
+    </div>
+
+    <div class="instructions" style="margin-top: 30px;">
+        <h4>📝 نحوه خرید:</h4>
+        <p>1. محصول مورد نظر را انتخاب کنید</p>
+        <p>2. اطلاعات خرید را وارد کنید</p>
+        <p>3. به آیدی ایتای <strong>@www_313M</strong> مراجعه کنید</p>
+        <p>4. کد پیگیری و اطلاعات را ارسال کنید</p>
+        <p>5. سی‌پی به حساب شما واریز می‌شود</p>
+    </div>
+</div>
+
+<div class="footer">
+    <p>© ۱۴۰۳ فروشگاه نظامی عماد | خرید امن سی‌پی</p>
+    <a href="javascript:history.back()" class="back-btn">← بازگشت به فروشگاه اصلی</a>
+</div>
+
+<script>
+// ==================== متغیرهای بازی ====================
+let gameActive = false;
+let score = 0;
+let timeLeft = 30;
+let targetsHit = 0;
+let gameTimer;
+let targetTimer;
+let freeCPClaimed = false;
+
+// ==================== توابع بازی ====================
+function showGame() {
+    document.getElementById('gameSection').style.display = 'block';
+    document.getElementById('gameSection').scrollIntoView({ behavior: 'smooth' });
+    resetGame();
+}
+
+function startGame() {
+    if (gameActive) return;
+    
+    gameActive = true;
+    score = 0;
+    timeLeft = 30;
+    targetsHit = 0;
+    
+    updateGameDisplay();
+    
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('claimBtn').disabled = true;
+    
+    // پاک کردن هدف‌های قبلی
+    clearGameArea();
+    
+    // شروع تایمر
+    gameTimer = setInterval(() => {
+        timeLeft--;
+        updateGameDisplay();
+        
+        if (timeLeft <= 0) {
+            endGame();
+        }
+    }, 1000);
+    
+    // ایجاد هدف‌های جدید
+    targetTimer = setInterval(createTarget, 800);
+    
+    // ایجاد اولین هدف
+    createTarget();
+}
+
+function createTarget() {
+    if (!gameActive) return;
+    
+    const gameArea = document.getElementById('gameArea');
+    const target = document.createElement('div');
+    target.className = 'target';
+    target.innerHTML = '🎯';
+    
+    // موقعیت تصادفی
+    const maxX = gameArea.offsetWidth - 70;
+    const maxY = gameArea.offsetHeight - 70;
+    const x = Math.floor(Math.random() * maxX);
+    const y = Math.floor(Math.random() * maxY);
+    
+    target.style.left = x + 'px';
+    target.style.top = y + 'px';
+    
+    // اندازه تصادفی برای افزایش سختی
+    const size = 40 + Math.random() * 40;
+    target.style.width = size + 'px';
+    target.style.height = size + 'px';
+    
+    // رویداد کلیک
+    target.onclick = function() {
+        if (!gameActive) return;
+        
+        // افزایش امتیاز
+        score += 10;
+        targetsHit++;
+        
+        // بروزرسانی نمایش
+        updateGameDisplay();
+        
+        // انیمیشن کلیک
+        this.style.transform = 'scale(1.3)';
+        this.style.background = '#4CAF50';
+        this.innerHTML = '✅';
+        
+        // حذف هدف بعد از کلیک
+        setTimeout(() => {
+            if (this.parentNode) {
+                this.parentNode.removeChild(this);
+            }
+        }, 300);
+        
+        // بررسی برنده شدن
+        if (score >= 1000 && !freeCPClaimed) {
+            document.getElementById('claimBtn').disabled = false;
+        }
+    };
+    
+    // حذف خودکار اگر کلیک نشد
+    setTimeout(() => {
+        if (target.parentNode && gameActive) {
+            target.parentNode.removeChild(target);
+        }
+    }, 1500);
+    
+    gameArea.appendChild(target);
+}
+
+function updateGameDisplay() {
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('timeDisplay').textContent = timeLeft;
+    document.getElementById('targetsDisplay').textContent = targetsHit;
+}
+
+function clearGameArea() {
+    const gameArea = document.getElementById('gameArea');
+    gameArea.innerHTML = '';
+}
+
+function endGame() {
+    gameActive = false;
+    clearInterval(gameTimer);
+    clearInterval(targetTimer);
+    document.getElementById('startBtn').disabled = false;
+    
+    // پاک کردن همه هدف‌ها
+    clearGameArea();
+    
+    // نمایش نتیجه
+    if (score >= 1000) {
+        showMessage('🎉 تبریک! شما برنده شدید!', '#4CAF50');
+    } else {
+        showMessage(`⏰ زمان به پایان رسید! ${score} امتیاز کسب کردید.`, '#FF5722');
+    }
+}
+
+function resetGame() {
+    endGame();
+    score = 0;
+    timeLeft = 30;
+    targetsHit = 0;
+    updateGameDisplay();
+    document.getElementById('claimBtn').disabled = true;
+}
+
+function claimFreeCP() {
+    if (score >= 1000 && !freeCPClaimed) {
+        freeCPClaimed = true;
+        
+        // نمایش پیام موفقیت
+        document.getElementById('successTitle').textContent = '🎮 برنده بازی شدید!';
+        document.getElementById('successMessage').textContent = 'تبریک! شما 80 سی‌پی رایگان برنده شدید.';
+        document.getElementById('cpAmount').textContent = '🏆 80 سی‌پی رایگان';
+        document.getElementById('successModal').style.display = 'flex';
+        
+        // غیرفعال کردن دکمه
+        document.getElementById('claimBtn').disabled = true;
+        document.getElementById('claimBtn').textContent = '✅ دریافت شد';
+    }
+}
+
+// ==================== توابع خرید ====================
+function buyProduct(productName, price) {
+    const orderId = 'CP-' + Date.now().toString().slice(-8);
+    
+    // نمایش پیام موفقیت
+    document.getElementById('successTitle').textContent = '✅ خرید موفق!';
+    document.getElementById('successMessage').textContent = `${productName} با موفقیت به سبد خرید اضافه شد.`;
+    document.getElementById('cpAmount').textContent = `💰 ${price.toLocaleString('fa-IR')} تومان`;
+    document.getElementById('successModal').style.display = 'flex';
+    
+    // ساخت پیام برای ارسال به ایتا
+    const message = `🎮 **خرید سی‌پی از فروشگاه عماد**
+    
+📦 محصول: ${productName}
+💰 مبلغ: ${price.toLocaleString('fa-IR')} تومان
+🔢 کد پیگیری: ${orderId}
+⏰ زمان: ${new Date().toLocaleString('fa-IR')}
+
+✅ لطفاً این اطلاعات را برای @www_313M در ایتا ارسال کنید.`;
+    
+    // ذخیره در حافظه مرورگر
+    const order = {
+        product: productName,
+        price: price,
+        orderId: orderId,
+        date: new Date().toISOString()
+    };
+    
+    saveOrder(order);
+}
+
+function closeSuccessModal() {
+    document.getElementById('successModal').style.display = 'none';
+}
+
+function saveOrder(order) {
+    // ذخیره سفارشات در localStorage
+    const orders = JSON.parse(localStorage.getItem('cp_orders') || '[]');
+    orders.push(order);
+    localStorage.setItem('cp_orders', JSON.stringify(orders));
+    console.log('سفارش ذخیره شد:', order);
+}
+
+// ==================== توابع کمکی ====================
+function showMessage(text, color) {
+    // ایجاد پیام موقت
+    const message = document.createElement('div');
+    message.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${color};
+        color: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        z-index: 1000;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+    `;
+    message.textContent = text;
+    document.body.appendChild(message);
+    
+    setTimeout(() => {
+        message.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            if (message.parentNode) {
+                document.body.removeChild(message);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// ==================== راه‌اندازی اولیه ====================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('بخش خرید سی‌پی بارگذاری شد');
+    
+    // اضافه کردن استایل‌های انیمیشن
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(-50%) translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(-50%) translateY(-100%);
+                opacity: 0;
+            }
+        }
+        
+        .target {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 87, 34, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // بررسی سفارشات قبلی
+    const orders = JSON.parse(localStorage.getItem('cp_orders') || '[]');
+    if (orders.length > 0) {
+        console.log('سفارشات قبلی:', orders.length);
+    }
+});
+</script>
+</body>
+</html>

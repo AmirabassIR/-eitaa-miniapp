@@ -1,296 +1,232 @@
-<!DOCTYPE html>
+<?php
+/* ================== CONFIG ================== */
+session_start();
+date_default_timezone_set('Asia/Tehran');
+
+define('ADMIN_USER', 'admin');
+define('ADMIN_PASS', '313Emad!');
+
+define('EITAA_TOKEN', 'bot428410:694cac21-5288-4cf3-8020-92ad066e8b91');
+define('EITAA_CHAT', '72430166');
+
+/* ============== STORAGE (JSON) ============== */
+function load_json($f,$d){ return file_exists($f)? json_decode(file_get_contents($f),true):$d; }
+function save_json($f,$d){ file_put_contents($f,json_encode($d,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT)); }
+
+$USERS_FILE = __DIR__.'/users.json';
+$ORDERS_FILE = __DIR__.'/orders.json';
+$PRODUCTS_FILE = __DIR__.'/products.json';
+
+$users = load_json($USERS_FILE, []);
+$orders = load_json($ORDERS_FILE, []);
+$products = load_json($PRODUCTS_FILE, [
+  ["id"=>1,"name"=>"420 CP","price"=>185000,"img"=>"https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"],
+  ["id"=>2,"name"=>"880 CP","price"=>365000,"img"=>"https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"],
+  ["id"=>3,"name"=>"80 CP (رایگان بازی)","price"=>0,"img"=>"https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg"],
+]);
+
+/* ============== HELPERS ============== */
+function uid(){ return 'ORD-'.rand(100000,999999); }
+function today(){ return date('Y-m-d'); }
+function sendEitaa($text){
+  $url = 'https://eitaayar.ir/api/'.EITAA_TOKEN.'/sendMessage';
+  $ch = curl_init($url);
+  curl_setopt_array($ch,[
+    CURLOPT_POST=>true,
+    CURLOPT_SSL_VERIFYHOST=>0,
+    CURLOPT_SSL_VERIFYPEER=>false,
+    CURLOPT_POSTFIELDS=>['chat_id'=>EITAA_CHAT,'text'=>$text],
+    CURLOPT_RETURNTRANSFER=>true
+  ]);
+  $res = curl_exec($ch); curl_close($ch);
+  return $res;
+}
+
+/* ============== ACTIONS ============== */
+$action = $_POST['action'] ?? null;
+
+/* Register */
+if($action==='register'){
+  $u = trim($_POST['username']);
+  $p = trim($_POST['password']);
+  $name = trim($_POST['name']);
+  $phone = trim($_POST['phone']);
+  $email = trim($_POST['email']);
+  foreach($users as $x) if($x['username']===$u) die('EXISTS');
+  $users[]=[
+    "id"=>time(),"username"=>$u,"password"=>$p,"name"=>$name,
+    "phone"=>$phone,"email"=>$email,
+    "gamesToday"=>0,"lastDay"=>today()
+  ];
+  save_json($USERS_FILE,$users);
+  $_SESSION['user']=$u; echo 'OK'; exit;
+}
+
+/* Login */
+if($action==='login'){
+  foreach($users as $x){
+    if($x['username']===$_POST['username'] && $x['password']===$_POST['password']){
+      $_SESSION['user']=$x['username']; echo 'OK'; exit;
+    }
+  }
+  die('FAIL');
+}
+
+/* Admin Login */
+if($action==='admin'){
+  if($_POST['u']===ADMIN_USER && $_POST['p']===ADMIN_PASS){
+    $_SESSION['admin']=1; echo 'OK'; exit;
+  } die('FAIL');
+}
+
+/* Save Order */
+if($action==='order'){
+  if(!isset($_SESSION['user'])) die('LOGIN');
+  $cart = json_decode($_POST['cart'],true);
+  $sum = 0; $lines=[];
+  foreach($cart as $c){ $sum += $c['price']*$c['qty']; $lines[]="- {$c['name']} × {$c['qty']}"; }
+  $code = uid();
+  $orders[]=[
+    "code"=>$code,"user"=>$_SESSION['user'],
+    "items"=>$cart,"total"=>$sum,"date"=>date('Y/m/d H:i'),
+    "type"=>"خرید","status"=>"در انتظار"
+  ];
+  save_json($ORDERS_FILE,$orders);
+  $msg = "📦 سفارش جدید\n🆔 $code\n🛒 اقلام:\n".implode("\n",$lines)."\n💰 مبلغ کل: ".number_format($sum)." تومان";
+  sendEitaa($msg);
+  echo 'OK'; exit;
+}
+
+/* Game Win */
+if($action==='game_win'){
+  if(!isset($_SESSION['user'])) die('LOGIN');
+  foreach($users as &$u){
+    if($u['username']===$_SESSION['user']){
+      if($u['lastDay']!==today()){ $u['gamesToday']=0; $u['lastDay']=today(); }
+      if($u['gamesToday']>=3) die('LIMIT');
+      $u['gamesToday']++;
+      save_json($USERS_FILE,$users);
+      $code = uid();
+      $orders[]=[
+        "code"=>$code,"user"=>$u['username'],
+        "items"=>[["name"=>"80 CP (رایگان بازی)","qty"=>1,"price"=>0]],
+        "total"=>0,"date"=>date('Y/m/d H:i'),
+        "type"=>"بازی رایگان","status"=>"در انتظار"
+      ];
+      save_json($ORDERS_FILE,$orders);
+      $msg="🎮 برد بازی!\n🆔 $code\n🎁 80 CP رایگان\n👤 {$u['name']}\n📞 {$u['phone']}";
+      sendEitaa($msg);
+      echo 'OK'; exit;
+    }
+  }
+}
+
+/* Admin Updates */
+if($action==='set_price' && isset($_SESSION['admin'])){
+  foreach($products as &$p) if($p['id']==$_POST['id']) $p['price']=(int)$_POST['price'];
+  save_json($PRODUCTS_FILE,$products); echo 'OK'; exit;
+}
+
+/* ================== UI ================== */
+?>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>فروشگاه CP کالاف | عماد</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فروش CP | امـاد</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Vazir,sans-serif;background:#0b1020;color:#fff}
-header{background:#000;padding:15px;border-bottom:2px solid #2196f3}
-h1,h2,h3{margin:10px 0}
-button{cursor:pointer;border:none;border-radius:18px;padding:8px 14px;font-family:inherit}
-.btn{background:#2196f3;color:#fff}
-.btn-success{background:#4caf50}
-.btn-danger{background:#dc3545}
-.btn-warning{background:#ffc107;color:#000}
-.container{max-width:1200px;margin:auto;padding:20px}
-.hidden{display:none}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.card{background:#111;border:1px solid #2196f3;border-radius:14px;padding:15px}
-input,select{width:100%;padding:10px;border-radius:8px;border:none;margin:5px 0}
-.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-.product img{width:80px;height:80px;object-fit:contain;border-radius:50%;background:#222}
-.price{color:#4caf50;font-size:18px}
-.badge{background:#4caf50;border-radius:10px;padding:2px 8px;font-size:12px}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{border-bottom:1px solid #333;padding:8px;text-align:right}
-.game-area{background:#050814;border:2px solid #333;border-radius:10px;height:300px;position:relative;overflow:hidden}
-.target{position:absolute;width:40px;height:40px;border-radius:50%;background:#ff5722;display:flex;align-items:center;justify-content:center;cursor:pointer}
-footer{background:#000;border-top:2px solid #2196f3;padding:15px;text-align:center}
-nav .btn{margin-left:6px}
+body{font-family:tahoma;background:#0b1020;color:#fff;margin:0}
+header{background:#000c;border-bottom:2px solid #2196f3;padding:10px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;padding:15px}
+.card{background:#0009;border:1px solid #2196f3;border-radius:12px;padding:12px;text-align:center}
+.card img{width:80px;height:80px;border-radius:50%}
+.btn{background:#2196f3;border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer}
+#cart{position:fixed;left:10px;bottom:10px;background:#000c;border-radius:12px;padding:10px}
+canvas{background:#111;border:2px solid #4caf50;border-radius:10px}
+.admin{background:#000a;padding:10px;margin:10px;border-radius:10px}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="row" style="justify-content:space-between;align-items:center">
-    <h2>🎮 فروشگاه CP کالاف | عماد</h2>
-    <nav id="navAuth">
-      <button class="btn" onclick="showLogin()">ورود</button>
-      <button class="btn" onclick="showRegister()">ثبت‌نام</button>
-      <button class="btn-danger" onclick="showAdminLogin()">ادمین</button>
-    </nav>
-    <div id="navUser" class="hidden">
-      <span id="navUserName"></span>
-      <span class="badge" id="navGames"></span>
-      <button class="btn-danger" onclick="logout()">خروج</button>
-    </div>
-  </div>
+<h2>فروش CP کالاف | امـاد</h2>
+<button class="btn" onclick="showLogin()">ورود/ثبت‌نام</button>
+<button class="btn" onclick="showGame()">🎮 بازی CP رایگان</button>
 </header>
 
-<div class="container" id="app"></div>
+<div class="grid" id="products">
+<?php foreach($products as $p): ?>
+<div class="card">
+<img src="<?=$p['img']?>">
+<h4><?=$p['name']?></h4>
+<div><?=number_format($p['price'])?> تومان</div>
+<button class="btn" onclick='addCart(<?=json_encode($p)?>)'>افزودن</button>
+</div>
+<?php endforeach; ?>
+</div>
 
-<footer>© فروشگاه CP عماد</footer>
+<div id="cart">
+<b>سبد خرید</b>
+<div id="cartItems"></div>
+<button class="btn" onclick="checkout()">ثبت نهایی</button>
+</div>
+
+<!-- Game -->
+<div id="game" style="display:none;text-align:center;padding:15px">
+<canvas id="cv" width="300" height="150"></canvas><br>
+<button class="btn" onclick="start()">شروع</button>
+</div>
 
 <script>
-// ================== تنظیمات ==================
-const ADMIN = { username:'admin', password:'313Emad!' };
-
-// ================== ذخیره‌ساز ==================
-const db = {
-  users: () => JSON.parse(localStorage.getItem('users')||'[]'),
-  saveUsers: (v)=>localStorage.setItem('users',JSON.stringify(v)),
-  products: () => JSON.parse(localStorage.getItem('products')||'null'),
-  saveProducts: (v)=>localStorage.setItem('products',JSON.stringify(v)),
-  orders: () => JSON.parse(localStorage.getItem('orders')||'[]'),
-  saveOrders: (v)=>localStorage.setItem('orders',JSON.stringify(v)),
-};
-
-// ================== داده‌های اولیه ==================
-if(!db.products()){
-  db.saveProducts([
-    {id:1,name:'سی‌پی دوبل',price:50000,img:'https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg'},
-    {id:2,name:'آفر ویژه',price:75000,img:'https://rengogame.com/wp-content/uploads/2025/08/battlepass-call-of-duty-mobile-2025.webp'},
-    {id:3,name:'بسته طلایی',price:120000,img:'https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp'}
-  ]);
-}
-
-// ================== وضعیت ==================
-let currentUser = null;
-let isAdmin = false;
-let cart = [];
-
-// ================== ابزارها ==================
-const today = ()=> new Date().toDateString();
-const uid = ()=> 'ORD-'+Math.random().toString(36).slice(2,8).toUpperCase();
-const app = document.getElementById('app');
-
-function updateNav(){
-  const navAuth=document.getElementById('navAuth');
-  const navUser=document.getElementById('navUser');
-  if(currentUser){
-    navAuth.classList.add('hidden');
-    navUser.classList.remove('hidden');
-    document.getElementById('navUserName').innerText='👤 '+currentUser.fullname;
-    document.getElementById('navGames').innerText=`بازی امروز: ${3-currentUser.gamesToday}/3`;
-  }else{
-    navAuth.classList.remove('hidden');
-    navUser.classList.add('hidden');
-  }
-}
-
-// ================== احراز هویت ==================
-function showRegister(){
-  app.innerHTML=`
-  <div class="card">
-    <h3>ثبت‌نام</h3>
-    <input id="r_fullname" placeholder="نام و نام خانوادگی">
-    <input id="r_phone" placeholder="شماره تماس">
-    <input id="r_email" placeholder="ایمیل">
-    <input id="r_username" placeholder="نام کاربری">
-    <input id="r_password" type="password" placeholder="رمز عبور">
-    <button class="btn-success" onclick="register()">ثبت</button>
-  </div>`;
-}
-function register(){
-  const users=db.users();
-  if(users.some(u=>u.username===r_username.value)) return alert('نام کاربری تکراری');
-  const u={
-    id:Date.now(),
-    fullname:r_fullname.value,
-    phone:r_phone.value,
-    email:r_email.value,
-    username:r_username.value,
-    password:r_password.value, // دمو
-    gamesToday:0,
-    lastDay:today()
-  };
-  users.push(u); db.saveUsers(users);
-  alert('ثبت‌نام شد'); showLogin();
-}
-function showLogin(){
-  app.innerHTML=`
-  <div class="card">
-    <h3>ورود</h3>
-    <input id="l_user" placeholder="نام کاربری">
-    <input id="l_pass" type="password" placeholder="رمز عبور">
-    <button class="btn" onclick="login()">ورود</button>
-  </div>`;
-}
-function login(){
-  const u=db.users().find(x=>x.username===l_user.value && x.password===l_pass.value);
-  if(!u) return alert('اطلاعات نادرست');
-  if(u.lastDay!==today()){ u.gamesToday=0; u.lastDay=today(); db.saveUsers(db.users().map(x=>x.id===u.id?u:x)); }
-  currentUser=u; isAdmin=false; updateNav(); loadShop();
-}
-function logout(){ currentUser=null; isAdmin=false; cart=[]; updateNav(); app.innerHTML=''; }
-
-// ================== فروشگاه ==================
-function loadShop(){
-  const products=db.products();
-  app.innerHTML=`
-  <div class="row">
-    <div class="card" style="flex:2">
-      <h3>🛒 محصولات</h3>
-      <div class="products">
-        ${products.map(p=>`
-          <div class="card product">
-            <img src="${p.img}">
-            <h4>${p.name}</h4>
-            <div class="price">${p.price.toLocaleString()} تومان</div>
-            <button class="btn" onclick="addToCart(${p.id})">افزودن</button>
-          </div>`).join('')}
-      </div>
-    </div>
-    <div class="card" style="flex:1">
-      <h3>🧺 سبد خرید</h3>
-      <div id="cartBox"></div>
-      <button class="btn-success" onclick="checkout()">ثبت سفارش</button>
-      <hr>
-      <button class="btn-warning" onclick="showGame()">🎮 CP رایگان</button>
-    </div>
-  </div>`;
+let cart=[];
+function addCart(p){
+  let f=cart.find(x=>x.id===p.id);
+  if(f) f.qty++; else cart.push({...p,qty:1});
   renderCart();
 }
-function addToCart(id){
-  const p=db.products().find(x=>x.id===id);
-  cart.push(p); renderCart();
-}
 function renderCart(){
-  const box=document.getElementById('cartBox');
-  if(!box) return;
-  let sum=0;
-  box.innerHTML=cart.map(p=>{sum+=p.price; return `<div>${p.name} - ${p.price.toLocaleString()}</div>`}).join('');
-  box.innerHTML+=`<hr><b>جمع: ${sum.toLocaleString()} تومان</b>`;
+  let d=document.getElementById('cartItems'); d.innerHTML='';
+  cart.forEach(c=> d.innerHTML+=`${c.name} × ${c.qty}<br>`);
 }
 function checkout(){
-  if(!currentUser) return alert('ابتدا وارد شوید');
-  const order={
-    id:uid(),
-    userId:currentUser.id,
-    user:currentUser.fullname,
-    phone:currentUser.phone,
-    email:currentUser.email,
-    items:cart.map(p=>p.name),
-    total:cart.reduce((a,b)=>a+b.price,0),
-    type:'purchase',
-    date:new Date().toLocaleString('fa-IR')
-  };
-  const orders=db.orders(); orders.push(order); db.saveOrders(orders);
-  cart=[]; renderCart();
-  alert('سفارش ثبت شد\nکد سفارش: '+order.id+'\nارسال به ایتا: @www_313M');
+  fetch('',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+  body:'action=order&cart='+encodeURIComponent(JSON.stringify(cart))})
+  .then(r=>r.text()).then(t=>alert(t==='OK'?'سفارش ثبت شد':'ابتدا وارد شوید'));
 }
 
-// ================== بازی ==================
-function showGame(){
-  if(!currentUser) return alert('ابتدا وارد شوید');
-  if(currentUser.gamesToday>=3) return alert('سهمیه امروز تمام شد');
-  currentUser.gamesToday++; updateNav();
-  app.innerHTML=`
-  <div class="card">
-    <h3>🎯 بازی CP رایگان (هدف: ۲۰۰۰)</h3>
-    <div>امتیاز: <b id="score">0</b></div>
-    <div class="game-area" id="gameArea"></div>
-  </div>`;
-  let score=0;
-  const area=document.getElementById('gameArea');
-  const timer=setInterval(()=>{
-    const t=document.createElement('div');
-    t.className='target'; t.innerText='🎯';
-    t.style.left=Math.random()*(area.clientWidth-40)+'px';
-    t.style.top=Math.random()*(area.clientHeight-40)+'px';
-    t.onclick=()=>{ score+=100; document.getElementById('score').innerText=score; t.remove();
-      if(score>=2000){ clearInterval(timer); winFreeCP(); }
-    };
-    area.appendChild(t);
-    setTimeout(()=>t.remove(),1200);
-  },700);
+/* Game Runner (simple) */
+let cv=document.getElementById('cv'),ctx=cv.getContext('2d'),x=20,y=110,v=0,obs=300,score=0,run=false;
+function start(){run=true;score=0;loop();}
+document.addEventListener('click',()=>{ if(y>=110)v=-8; });
+function loop(){
+ if(!run)return;
+ ctx.clearRect(0,0,300,150);
+ v+=0.5; y+=v; if(y>110){y=110;v=0}
+ obs-=3; if(obs<0){obs=300;score+=100}
+ ctx.fillRect(x,y,10,10); ctx.fillRect(obs,110,10,10);
+ if(Math.abs(obs-x)<10 && Math.abs(y-110)<10){ run=false; alert('باختی'); return; }
+ if(score>=2000){
+   run=false;
+   fetch('',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=game_win'})
+   .then(r=>r.text()).then(t=>alert(t==='OK'?'بردی! سفارش ثبت شد':'محدودیت روزانه'));
+   return;
+ }
+ requestAnimationFrame(loop);
 }
-function winFreeCP(){
-  const order={
-    id:uid(),
-    userId:currentUser.id,
-    user:currentUser.fullname,
-    phone:currentUser.phone,
-    email:currentUser.email,
-    items:['۸۰ CP رایگان'],
-    total:0,
-    type:'free',
-    date:new Date().toLocaleString('fa-IR')
-  };
-  const orders=db.orders(); orders.push(order); db.saveOrders(orders);
-  alert('🎉 بردی! سفارش ۸۰ CP ثبت شد\nکد: '+order.id);
-  loadShop();
-}
-
-// ================== ادمین ==================
-function showAdminLogin(){
-  app.innerHTML=`
-  <div class="card">
-    <h3>ورود ادمین</h3>
-    <input id="a_user" placeholder="یوزرنیم">
-    <input id="a_pass" type="password" placeholder="پسورد">
-    <button class="btn-danger" onclick="adminLogin()">ورود</button>
-  </div>`;
-}
-function adminLogin(){
-  if(a_user.value===ADMIN.username && a_pass.value===ADMIN.password){
-    isAdmin=true; currentUser=null; updateNav(); adminPanel();
-  }else alert('دسترسی رد شد');
-}
-function adminPanel(){
-  app.innerHTML=`
-  <div class="row">
-    <div class="card" style="flex:1">
-      <h3>👥 کاربران</h3>
-      <table class="table">
-        <tr><th>نام</th><th>تماس</th><th>ایمیل</th></tr>
-        ${db.users().map(u=>`<tr><td>${u.fullname}</td><td>${u.phone}</td><td>${u.email}</td></tr>`).join('')}
-      </table>
-    </div>
-    <div class="card" style="flex:1">
-      <h3>📦 سفارش‌ها</h3>
-      <table class="table">
-        <tr><th>کد</th><th>کاربر</th><th>نوع</th><th>مبلغ</th></tr>
-        ${db.orders().map(o=>`<tr><td>${o.id}</td><td>${o.user}</td><td>${o.type}</td><td>${o.total}</td></tr>`).join('')}
-      </table>
-    </div>
-  </div>
-  <div class="card">
-    <h3>🛒 محصولات</h3>
-    ${db.products().map(p=>`
-      <div class="row">
-        <b>${p.name}</b>
-        <input value="${p.price}" onchange="updatePrice(${p.id},this.value)">
-      </div>`).join('')}
-  </div>`;
-}
-function updatePrice(id,val){
-  const ps=db.products().map(p=>p.id===id?({...p,price:+val}):p);
-  db.saveProducts(ps); alert('قیمت به‌روز شد');
-}
+function showGame(){document.getElementById('game').style.display='block';}
+function showLogin(){alert('ثبت‌نام/ورود در نسخه نهایی تکمیلی است (بک‌اند آماده است).');}
 </script>
+
+<?php if(isset($_SESSION['admin'])): ?>
+<div class="admin">
+<h3>پنل ادمین</h3>
+<h4>سفارش‌ها</h4>
+<pre><?=json_encode($orders,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT)?></pre>
+<h4>کاربران</h4>
+<pre><?=json_encode($users,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT)?></pre>
+</div>
+<?php endif; ?>
+
 </body>
 </html>

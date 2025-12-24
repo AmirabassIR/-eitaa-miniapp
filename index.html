@@ -7,27 +7,91 @@
 <style>
     @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css');
 
+    :root {
+        --primary-color: #2196F3;
+        --secondary-color: #4CAF50;
+        --danger-color: #dc3545;
+        --warning-color: #FFC107;
+        --dark-bg: #0a0a2a;
+        --card-bg: rgba(0,0,0,0.8);
+    }
+
     body {
         font-family: 'Vazir', sans-serif;
         direction: rtl;
         margin: 0;
         padding: 0;
-        background: linear-gradient(135deg, #0a0a2a 0%, #1a1a4a 100%);
+        background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a4a 100%);
         color: #fff;
         min-height: 100vh;
     }
 
+    /* هدر با منوی کاربر */
     .header {
         text-align: center;
-        padding: 20px;
-        background: rgba(0, 0, 0, 0.7);
-        border-bottom: 3px solid #2196F3;
+        padding: 15px 20px;
+        background: rgba(0, 0, 0, 0.8);
+        border-bottom: 3px solid var(--primary-color);
+        position: relative;
+    }
+
+    .user-menu {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .user-btn {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        border: 1px solid var(--primary-color);
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .user-btn:hover {
+        background: var(--primary-color);
+    }
+
+    .admin-btn {
+        background: var(--danger-color) !important;
+        border-color: var(--danger-color) !important;
+    }
+
+    .admin-btn:hover {
+        background: #c82333 !important;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .welcome-text {
+        color: var(--warning-color);
+        font-size: 14px;
+    }
+
+    .game-count {
+        background: var(--secondary-color);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 12px;
     }
 
     .header h1 {
-        color: #2196F3;
+        color: var(--primary-color);
         margin: 0;
-        font-size: 32px;
+        font-size: 28px;
         text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
@@ -36,232 +100,8 @@
         margin: 10px 0 0;
     }
 
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .card {
-        background: rgba(0,0,0,0.8);
-        border-radius: 15px;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        transition: all 0.3s ease;
-        border: 2px solid #2196F3;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
-        border-color: #4FC3F7;
-    }
-
-    .card img {
-        width: 80px;
-        height: 80px;
-        object-fit: contain;
-        margin-bottom: 15px;
-        border-radius: 50%;
-        border: 3px solid #2196F3;
-        background: rgba(255,255,255,0.1);
-        padding: 5px;
-    }
-
-    .card h3 {
-        color: #4FC3F7;
-        margin: 10px 0;
-        font-size: 20px;
-    }
-
-    .card p {
-        color: #ccc;
-        margin: 10px 0;
-        font-size: 14px;
-    }
-
-    .price {
-        font-size: 24px;
-        font-weight: bold;
-        color: #4CAF50;
-        margin: 15px 0;
-    }
-
-    .free {
-        color: #FFC107 !important;
-    }
-
-    .button {
-        display: inline-block;
-        background: linear-gradient(135deg, #2196F3, #1976D2);
-        color: white;
-        padding: 12px 30px;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: bold;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s;
-        width: 100%;
-        font-size: 16px;
-        margin-top: 10px;
-    }
-
-    .button:hover {
-        background: linear-gradient(135deg, #1976D2, #0D47A1);
-        transform: scale(1.05);
-    }
-
-    .game-button {
-        background: linear-gradient(135deg, #4CAF50, #2E7D32) !important;
-    }
-
-    .game-button:hover {
-        background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
-    }
-
-    /* بازی */
-    .game-section {
-        background: rgba(0,0,0,0.85);
-        border-radius: 20px;
-        padding: 30px;
-        margin: 30px 0;
-        border: 3px solid #4CAF50;
-        text-align: center;
-    }
-
-    .game-title {
-        color: #4CAF50;
-        font-size: 28px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .game-info {
-        display: flex;
-        justify-content: space-around;
-        margin: 20px 0;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .info-box {
-        background: rgba(255,255,255,0.1);
-        padding: 15px 25px;
-        border-radius: 10px;
-        min-width: 120px;
-    }
-
-    .info-value {
-        font-size: 32px;
-        font-weight: bold;
-        color: #FFC107;
-        margin: 5px 0;
-    }
-
-    .info-label {
-        color: #aaa;
-        font-size: 14px;
-    }
-
-    .game-area {
-        position: relative;
-        width: 100%;
-        height: 300px;
-        background: rgba(0, 0, 0, 0.5);
-        border-radius: 10px;
-        margin: 20px 0;
-        border: 2px solid #333;
-        overflow: hidden;
-    }
-
-    .target {
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        background: #FF5722;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        font-weight: bold;
-        color: white;
-        transition: all 0.2s;
-        user-select: none;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .target:hover {
-        transform: scale(1.1);
-    }
-
-    .controls {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        margin-top: 20px;
-        flex-wrap: wrap;
-    }
-
-    .control-btn {
-        padding: 12px 25px;
-        border-radius: 8px;
-        border: none;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        font-size: 16px;
-    }
-
-    .start-btn {
-        background: #2196F3;
-        color: white;
-    }
-
-    .reset-btn {
-        background: #FF9800;
-        color: white;
-    }
-
-    .claim-btn {
-        background: #4CAF50;
-        color: white;
-    }
-
-    .claim-btn:disabled {
-        background: #666;
-        cursor: not-allowed;
-    }
-
-    .instructions {
-        background: rgba(255,255,255,0.05);
-        padding: 15px;
-        border-radius: 10px;
-        margin-top: 20px;
-        text-align: right;
-        line-height: 1.8;
-    }
-
-    .instructions h4 {
-        color: #FFC107;
-        margin-top: 0;
-    }
-
-    /* خرید موفق */
-    .success-modal {
+    /* مودال‌ها */
+    .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
@@ -271,28 +111,296 @@
         display: none;
         justify-content: center;
         align-items: center;
-        z-index: 1000;
+        z-index: 10000;
     }
 
-    .success-content {
-        background: rgba(0,0,0,0.95);
-        border: 3px solid #4CAF50;
-        border-radius: 20px;
-        padding: 40px;
-        text-align: center;
-        max-width: 500px;
+    .modal {
+        background: var(--card-bg);
+        border: 3px solid var(--primary-color);
+        border-radius: 15px;
+        padding: 30px;
         width: 90%;
+        max-width: 450px;
+        text-align: center;
     }
 
-    .success-icon {
-        font-size: 80px;
+    .modal h3 {
+        color: var(--primary-color);
+        margin-top: 0;
+    }
+
+    .modal-input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #555;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .modal-error {
+        color: var(--danger-color);
+        font-size: 14px;
+        margin: 10px 0;
+        display: none;
+    }
+
+    /* بازی پیچیده */
+    .game-container {
+        background: var(--card-bg);
+        border: 3px solid var(--secondary-color);
+        border-radius: 20px;
+        padding: 25px;
+        margin: 25px auto;
+        max-width: 1000px;
+        display: none;
+    }
+
+    .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .game-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .game-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .stat-box {
+        background: rgba(255,255,255,0.1);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: var(--warning-color);
+        margin: 5px 0;
+    }
+
+    .stat-label {
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    /* انواع مختلف هدف‌ها */
+    .target {
+        position: absolute;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+    }
+
+    .target-normal {
+        width: 60px;
+        height: 60px;
+        background: #FF5722;
+        border-radius: 50%;
+        animation: pulse 1s infinite;
+    }
+
+    .target-bonus {
+        width: 40px;
+        height: 40px;
+        background: #FFC107;
+        border-radius: 10px;
+        animation: rotate 2s infinite linear;
+    }
+
+    .target-bomb {
+        width: 70px;
+        height: 70px;
+        background: #dc3545;
+        border-radius: 50%;
+        animation: shake 0.5s infinite;
+    }
+
+    .target-time {
+        width: 50px;
+        height: 50px;
+        background: #2196F3;
+        border-radius: 50%;
         animation: bounce 1s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.7); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 87, 34, 0); }
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
     }
 
     @keyframes bounce {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .game-area {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 2px solid #333;
+        overflow: hidden;
+    }
+
+    .power-ups {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+
+    .power-btn {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        border: 1px solid var(--warning-color);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .power-btn:hover:not(:disabled) {
+        background: var(--warning-color);
+        color: #000;
+    }
+
+    .power-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* محصولات */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+    }
+
+    .product-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        border: 2px solid var(--primary-color);
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+    }
+
+    .product-card img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 15px;
+        border-radius: 50%;
+        border: 3px solid var(--primary-color);
+        background: rgba(255,255,255,0.1);
+        padding: 5px;
+    }
+
+    .product-price {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--secondary-color);
+        margin: 15px 0;
+    }
+
+    .edit-price-btn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 12px;
+        display: none;
+    }
+
+    .admin-controls {
+        text-align: center;
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 10px;
+        display: none;
+    }
+
+    /* دکمه‌ها */
+    .btn {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary-color), #1976D2);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        margin: 5px;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--secondary-color), #2E7D32);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger-color), #c82333);
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, var(--warning-color), #e0a800);
+        color: #000;
     }
 
     /* فوتتر */
@@ -301,50 +409,29 @@
         padding: 20px;
         background: rgba(0,0,0,0.8);
         margin-top: 40px;
-        border-top: 2px solid #2196F3;
+        border-top: 2px solid var(--primary-color);
     }
 
-    .back-btn {
-        display: inline-block;
-        background: #666;
-        color: white;
-        padding: 10px 25px;
-        border-radius: 5px;
-        text-decoration: none;
-        margin-top: 10px;
-    }
-
-    /* رسپانسیو */
-    @media (max-width: 768px) {
-        .grid {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /* انیمیشن‌ها */
+    @keyframes slideIn {
+        from {
+            transform: translateX(-50%) translateY(-100%);
+            opacity: 0;
         }
-        
-        .game-area {
-            height: 250px;
-        }
-        
-        .info-box {
-            min-width: 100px;
-            padding: 10px 15px;
+        to {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
     }
 
-    @media (max-width: 480px) {
-        .header h1 {
-            font-size: 24px;
+    @keyframes slideOut {
+        from {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
-        
-        .card {
-            padding: 15px;
-        }
-        
-        .controls {
-            flex-direction: column;
-        }
-        
-        .control-btn {
-            width: 100%;
+        to {
+            transform: translateX(-50%) translateY(-100%);
+            opacity: 0;
         }
     }
 </style>
@@ -352,422 +439,582 @@
 <body>
 
 <div class="header">
+    <div class="user-menu">
+        <div id="userButtons">
+            <button class="user-btn" onclick="showLoginModal()">🔐 ورود</button>
+            <button class="user-btn" onclick="showRegisterModal()">📝 ثبت‌نام</button>
+            <button class="user-btn admin-btn" onclick="showAdminLoginModal()">👑 ورود ادمین</button>
+        </div>
+        <div id="userInfo" style="display: none;">
+            <div class="user-info">
+                <span class="welcome-text" id="welcomeText"></span>
+                <span class="game-count" id="gameCount">۳/۳</span>
+                <button class="user-btn" onclick="logoutUser()">خروج</button>
+            </div>
+        </div>
+    </div>
+    
     <h1>🎮 خرید سی‌پی | فروشگاه نظامی عماد</h1>
     <p>خرید امن و سریع سی‌پی برای بازی‌های محبوب</p>
 </div>
 
-<div class="container">
-    <div class="grid">
-        <!-- محصولات سی‌پی -->
-        <div class="card">
-            <img src="https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg" alt="سی‌پی دوبل">
-            <h3>سی‌پی دوبل</h3>
-            <p>مبلغ خرید شما دوبرابر می‌شود!</p>
-            <div class="price">۵۰,۰۰۰ تومان</div>
-            <button class="button" onclick="buyProduct('سی‌پی دوبل', 50000)">🎯 خرید سریع</button>
-        </div>
+<div class="container" id="mainContainer">
+    <!-- محتوای اصلی اینجا لود می‌شود -->
+</div>
 
-        <div class="card">
-            <img src="https://rengogame.com/wp-content/uploads/2025/08/battlepass-call-of-duty-mobile-2025.webp" alt="آفر ویژه">
-            <h3>آفر ویژه</h3>
-            <p>بسته کامل Battle Pass + 500 سی‌پی</p>
-            <div class="price">۷۵,۰۰۰ تومان</div>
-            <button class="button" onclick="buyProduct('آفر ویژه', 75000)">🌟 خرید ویژه</button>
-        </div>
-
-        <div class="card">
-            <img src="https://rengogame.com/wp-content/uploads/2023/09/free-cp-icon-rengogame-min.webp" alt="سی‌پی رایگان">
-            <h3>سی‌پی رایگان</h3>
-            <p>دریافت 80 سی‌پی با انجام بازی</p>
-            <div class="price free">🎁 کاملاً رایگان</div>
-            <button class="button game-button" onclick="showGame()">🎮 شروع بازی</button>
-        </div>
-
-        <div class="card">
-            <img src="https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp" alt="بسته طلایی">
-            <h3>بسته طلایی</h3>
-            <p>1200 سی‌پی + آیتم‌های خاص</p>
-            <div class="price">۱۲۰,۰۰۰ تومان</div>
-            <button class="button" onclick="buyProduct('بسته طلایی', 120000)">👑 خرید طلایی</button>
-        </div>
-
-        <div class="card">
-            <img src="https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp" alt="بسته نقره‌ای">
-            <h3>بسته نقره‌ای</h3>
-            <p>800 سی‌پی + آیتم‌های ویژه</p>
-            <div class="price">۸۰,۰۰۰ تومان</div>
-            <button class="button" onclick="buyProduct('بسته نقره‌ای', 80000)">🥈 خرید نقره‌ای</button>
-        </div>
-
-        <div class="card">
-            <img src="https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp" alt="بسته برنزی">
-            <h3>بسته برنزی</h3>
-            <p>400 سی‌پی + آیتم‌های معمولی</p>
-            <div class="price">۴۰,۰۰۰ تومان</div>
-            <button class="button" onclick="buyProduct('بسته برنزی', 40000)">🥉 خرید برنزی</button>
-        </div>
+<!-- مودال ورود کاربر -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal">
+        <h3>🔐 ورود به حساب کاربری</h3>
+        <input type="text" id="loginUsername" class="modal-input" placeholder="نام کاربری">
+        <input type="password" id="loginPassword" class="modal-input" placeholder="رمز عبور">
+        <div class="modal-error" id="loginError"></div>
+        <button class="btn" onclick="loginUser()">ورود</button>
+        <button class="btn btn-danger" onclick="hideModal('loginModal')">انصراف</button>
     </div>
+</div>
 
-    <!-- بخش بازی -->
-    <div id="gameSection" style="display: none;">
-        <div class="game-section">
-            <h2 class="game-title">🎮 بازی برای دریافت 80 سی‌پی رایگان</h2>
-            
-            <div class="game-info">
-                <div class="info-box">
-                    <div class="info-value" id="scoreDisplay">0</div>
-                    <div class="info-label">امتیاز شما</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-value" id="timeDisplay">30</div>
-                    <div class="info-label">ثانیه باقی‌مانده</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-value" id="targetsDisplay">0</div>
-                    <div class="info-label">هدف زده شده</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-value" id="neededScore">1000</div>
-                    <div class="info-label">امتیاز لازم</div>
-                </div>
-            </div>
-
-            <div class="game-area" id="gameArea">
-                <!-- هدف‌ها اینجا ایجاد می‌شوند -->
-            </div>
-
-            <div class="controls">
-                <button class="control-btn start-btn" id="startBtn" onclick="startGame()">▶️ شروع بازی</button>
-                <button class="control-btn reset-btn" onclick="resetGame()">🔄 بازی مجدد</button>
-                <button class="control-btn claim-btn" id="claimBtn" onclick="claimFreeCP()" disabled>🎁 دریافت 80 سی‌پی رایگان</button>
-            </div>
-
-            <div class="instructions">
-                <h4>🎯 راهنمای بازی:</h4>
-                <p>• روی هدف‌های قرمز رنگ کلیک کنید</p>
-                <p>• هر هدف 10 امتیاز دارد</p>
-                <p>• باید تا 1000 امتیاز برسید</p>
-                <p>• زمان بازی 30 ثانیه است</p>
-                <p>• بعد از رسیدن به 1000 امتیاز می‌توانید 80 سی‌پی رایگان دریافت کنید</p>
-            </div>
-        </div>
+<!-- مودال ثبت‌نام کاربر -->
+<div class="modal-overlay" id="registerModal">
+    <div class="modal">
+        <h3>📝 ایجاد حساب جدید</h3>
+        <input type="text" id="regUsername" class="modal-input" placeholder="نام کاربری (حداقل ۴ حرف)">
+        <input type="password" id="regPassword" class="modal-input" placeholder="رمز عبور (حداقل ۶ حرف)">
+        <input type="password" id="regConfirm" class="modal-input" placeholder="تکرار رمز عبور">
+        <input type="text" id="regPhone" class="modal-input" placeholder="شماره همراه (۰۹۱۲۳۴۵۶۷۸۹)">
+        <div class="modal-error" id="registerError"></div>
+        <button class="btn btn-success" onclick="registerUser()">ثبت‌نام</button>
+        <button class="btn btn-danger" onclick="hideModal('registerModal')">انصراف</button>
     </div>
+</div>
 
-    <!-- بخش خرید موفق -->
-    <div class="success-modal" id="successModal">
-        <div class="success-content">
-            <div class="success-icon">🎉</div>
-            <h2 id="successTitle">خرید موفق!</h2>
-            <p id="successMessage"></p>
-            <p id="cpAmount" style="font-size: 24px; color: #4CAF50; margin: 20px 0;"></p>
-            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 20px 0;">
-                <p style="margin: 5px 0;">برای تکمیل خرید لطفاً به ایتا مراجعه کنید:</p>
-                <p style="color: #4FC3F7; font-weight: bold; font-size: 18px;">@www_313M</p>
-            </div>
-            <button class="button" onclick="closeSuccessModal()" style="margin-top: 20px;">باشه</button>
-        </div>
-    </div>
-
-    <div class="instructions" style="margin-top: 30px;">
-        <h4>📝 نحوه خرید:</h4>
-        <p>1. محصول مورد نظر را انتخاب کنید</p>
-        <p>2. اطلاعات خرید را وارد کنید</p>
-        <p>3. به آیدی ایتای <strong>@www_313M</strong> مراجعه کنید</p>
-        <p>4. کد پیگیری و اطلاعات را ارسال کنید</p>
-        <p>5. سی‌پی به حساب شما واریز می‌شود</p>
+<!-- مودال ورود ادمین -->
+<div class="modal-overlay" id="adminLoginModal">
+    <div class="modal">
+        <h3>👑 ورود ادمین</h3>
+        <p style="color: #aaa; margin-bottom: 15px;">فقط مدیران سیستم</p>
+        <input type="text" id="adminUser" class="modal-input" placeholder="نام کاربری ادمین">
+        <input type="password" id="adminPass" class="modal-input" placeholder="رمز عبور ادمین">
+        <div class="modal-error" id="adminError"></div>
+        <button class="btn btn-warning" onclick="loginAdmin()">ورود به پنل مدیریت</button>
+        <button class="btn btn-danger" onclick="hideModal('adminLoginModal')">انصراف</button>
     </div>
 </div>
 
 <div class="footer">
     <p>© ۱۴۰۳ فروشگاه نظامی عماد | خرید امن سی‌پی</p>
-    <a href="javascript:history.back()" class="back-btn">← بازگشت به فروشگاه اصلی</a>
+    <a href="javascript:history.back()" class="btn">← بازگشت به فروشگاه اصلی</a>
 </div>
 
 <script>
+// ==================== اطلاعات احراز هویت ====================
+const ADMIN_CREDENTIALS = {
+    username: "admin_military",
+    password: "Em@d313M!2024#Secure"
+};
+
+// ==================== متغیرهای جهانی ====================
+let currentUser = null;
+let isAdminLoggedIn = false;
+let products = [
+    {id: 1, name: "سی‌پی دوبل", price: 50000, img: "https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg"},
+    {id: 2, name: "آفر ویژه", price: 75000, img: "https://rengogame.com/wp-content/uploads/2025/08/battlepass-call-of-duty-mobile-2025.webp"},
+    {id: 3, name: "بسته طلایی", price: 120000, img: "https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"},
+    {id: 4, name: "بسته نقره‌ای", price: 80000, img: "https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"},
+    {id: 5, name: "بسته برنزی", price: 40000, img: "https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"}
+];
+
 // ==================== متغیرهای بازی ====================
 let gameActive = false;
-let score = 0;
-let timeLeft = 30;
-let targetsHit = 0;
+let gameScore = 0;
+let gameTime = 60;
+let gameLevel = 1;
+let remainingGames = 3;
+let powerUps = {
+    doublePoints: 1,
+    timeFreeze: 1,
+    bombDefuser: 1
+};
 let gameTimer;
-let targetTimer;
-let freeCPClaimed = false;
+let targetTimers = [];
+let activeTargets = [];
 
-// ==================== توابع بازی ====================
+// ==================== توابع مدیریت کاربران ====================
+function showLoginModal() {
+    showModal('loginModal');
+}
+
+function showRegisterModal() {
+    showModal('registerModal');
+}
+
+function showAdminLoginModal() {
+    showModal('adminLoginModal');
+}
+
+function showModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+}
+
+function hideModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    document.getElementById(modalId.replace('Modal', 'Error')).textContent = '';
+}
+
+function loginUser() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    if (!username || !password) {
+        showError('loginError', 'لطفاً همه فیلدها را پر کنید');
+        return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('cp_users') || '[]');
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if (user) {
+        currentUser = {
+            ...user,
+            lastGameDate: new Date().toLocaleDateString('fa-IR'),
+            gamesPlayedToday: user.gamesPlayedToday || 0
+        };
+        
+        // بررسی بازنشانی بازی‌های روزانه
+        if (user.lastGameDate !== currentUser.lastGameDate) {
+            currentUser.gamesPlayedToday = 0;
+        }
+        
+        remainingGames = 3 - currentUser.gamesPlayedToday;
+        
+        updateUserUI();
+        hideModal('loginModal');
+        loadMainContent();
+        showMessage('✅ با موفقیت وارد شدید', 'success');
+    } else {
+        showError('loginError', 'نام کاربری یا رمز عبور اشتباه است');
+    }
+}
+
+function registerUser() {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+    const confirm = document.getElementById('regConfirm').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    
+    // اعتبارسنجی
+    if (!username || username.length < 4) {
+        showError('registerError', 'نام کاربری باید حداقل ۴ حرف باشد');
+        return;
+    }
+    
+    if (!password || password.length < 6) {
+        showError('registerError', 'رمز عبور باید حداقل ۶ حرف باشد');
+        return;
+    }
+    
+    if (password !== confirm) {
+        showError('registerError', 'رمز عبور و تکرار آن مطابقت ندارند');
+        return;
+    }
+    
+    if (!phone || !/^09[0-9]{9}$/.test(phone)) {
+        showError('registerError', 'شماره همراه معتبر وارد کنید');
+        return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('cp_users') || '[]');
+    
+    // بررسی وجود کاربر
+    if (users.some(u => u.username === username)) {
+        showError('registerError', 'این نام کاربری قبلاً ثبت شده است');
+        return;
+    }
+    
+    // ایجاد کاربر جدید
+    const newUser = {
+        id: Date.now(),
+        username: username,
+        password: password,
+        phone: phone,
+        registerDate: new Date().toLocaleDateString('fa-IR'),
+        totalGames: 0,
+        totalScore: 0,
+        gamesPlayedToday: 0,
+        lastGameDate: null,
+        isAdmin: false
+    };
+    
+    users.push(newUser);
+    localStorage.setItem('cp_users', JSON.stringify(users));
+    
+    currentUser = newUser;
+    remainingGames = 3;
+    
+    updateUserUI();
+    hideModal('registerModal');
+    loadMainContent();
+    showMessage('🎉 حساب شما با موفقیت ایجاد شد!', 'success');
+}
+
+function logoutUser() {
+    if (currentUser) {
+        // ذخیره اطلاعات کاربر
+        const users = JSON.parse(localStorage.getItem('cp_users') || '[]');
+        const userIndex = users.findIndex(u => u.id === currentUser.id);
+        if (userIndex !== -1) {
+            users[userIndex] = {...currentUser};
+            localStorage.setItem('cp_users', JSON.stringify(users));
+        }
+    }
+    
+    currentUser = null;
+    isAdminLoggedIn = false;
+    updateUserUI();
+    loadMainContent();
+    showMessage('👋 از حساب خود خارج شدید', 'info');
+}
+
+function updateUserUI() {
+    const userButtons = document.getElementById('userButtons');
+    const userInfo = document.getElementById('userInfo');
+    
+    if (currentUser) {
+        userButtons.style.display = 'none';
+        userInfo.style.display = 'block';
+        document.getElementById('welcomeText').textContent = `👋 ${currentUser.username}`;
+        document.getElementById('gameCount').textContent = `${remainingGames}/۳`;
+    } else {
+        userButtons.style.display = 'flex';
+        userInfo.style.display = 'none';
+    }
+    
+    // نمایش/پنهان کردن کنترل‌های ادمین
+    const adminControls = document.querySelector('.admin-controls');
+    if (isAdminLoggedIn) {
+        if (adminControls) adminControls.style.display = 'block';
+        document.querySelectorAll('.edit-price-btn').forEach(btn => btn.style.display = 'block');
+    } else {
+        if (adminControls) adminControls.style.display = 'none';
+        document.querySelectorAll('.edit-price-btn').forEach(btn => btn.style.display = 'none');
+    }
+}
+
+// ==================== توابع مدیریت ادمین ====================
+function loginAdmin() {
+    const username = document.getElementById('adminUser').value.trim();
+    const password = document.getElementById('adminPass').value.trim();
+    
+    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        isAdminLoggedIn = true;
+        hideModal('adminLoginModal');
+        updateUserUI();
+        loadMainContent();
+        showMessage('✅ وارد پنل مدیریت شدید', 'success');
+    } else {
+        showError('adminError', 'اطلاعات ورود اشتباه است');
+    }
+}
+
+function editProductPrice(productId) {
+    if (!isAdminLoggedIn) {
+        showMessage('❌ فقط ادمین‌ها می‌توانند قیمت را ویرایش کنند', 'error');
+        return;
+    }
+    
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    const newPrice = prompt(`ویرایش قیمت ${product.name}:\nقیمت فعلی: ${product.price.toLocaleString()} تومان`, product.price);
+    
+    if (newPrice && !isNaN(newPrice) && newPrice > 0) {
+        product.price = parseInt(newPrice);
+        saveProducts();
+        loadMainContent();
+        showMessage('✅ قیمت با موفقیت ویرایش شد', 'success');
+    }
+}
+
+function addNewProduct() {
+    if (!isAdminLoggedIn) {
+        showMessage('❌ فقط ادمین‌ها می‌توانند محصول اضافه کنند', 'error');
+        return;
+    }
+    
+    const name = prompt('نام محصول جدید:');
+    if (!name) return;
+    
+    const price = prompt('قیمت محصول (تومان):');
+    if (!price || isNaN(price) || price <= 0) return;
+    
+    const newProduct = {
+        id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
+        name: name,
+        price: parseInt(price),
+        img: "https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"
+    };
+    
+    products.push(newProduct);
+    saveProducts();
+    loadMainContent();
+    showMessage('✅ محصول جدید اضافه شد', 'success');
+}
+
+function saveProducts() {
+    localStorage.setItem('cp_products', JSON.stringify(products));
+}
+
+function loadProducts() {
+    const saved = localStorage.getItem('cp_products');
+    if (saved) {
+        products = JSON.parse(saved);
+    }
+}
+
+// ==================== توابع بازی پیچیده ====================
 function showGame() {
-    document.getElementById('gameSection').style.display = 'block';
-    document.getElementById('gameSection').scrollIntoView({ behavior: 'smooth' });
+    if (!currentUser) {
+        showMessage('❌ برای بازی باید ابتدا وارد شوید', 'error');
+        showLoginModal();
+        return;
+    }
+    
+    if (remainingGames <= 0) {
+        showMessage('❌ امروز بازی‌های شما به پایان رسیده است. فردا دوباره امتحان کنید!', 'error');
+        return;
+    }
+    
+    document.getElementById('mainContainer').innerHTML = `
+        <div class="game-container" id="gameContainer">
+            <div class="game-header">
+                <h2 style="color: var(--secondary-color); margin: 0;">🎮 بازی برای دریافت 80 سی‌پی رایگان</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" onclick="loadMainContent()">بازگشت</button>
+                    <button class="btn btn-danger" onclick="endGame()" id="endGameBtn">پایان بازی</button>
+                </div>
+            </div>
+            
+            <div class="game-stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="scoreDisplay">۰</div>
+                    <div class="stat-label">امتیاز</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="timeDisplay">۶۰</div>
+                    <div class="stat-label">ثانیه</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="levelDisplay">۱</div>
+                    <div class="stat-label">مرحله</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${remainingGames}/۳</div>
+                    <div class="stat-label">بازی باقی‌مانده</div>
+                </div>
+            </div>
+            
+            <div class="power-ups">
+                <button class="power-btn" onclick="usePowerUp('doublePoints')" id="doubleBtn">
+                    ✨ امتیاز دوبرابر (${powerUps.doublePoints})
+                </button>
+                <button class="power-btn" onclick="usePowerUp('timeFreeze')" id="freezeBtn">
+                    ⏸️ توقف زمان (${powerUps.timeFreeze})
+                </button>
+                <button class="power-btn" onclick="usePowerUp('bombDefuser')" id="bombBtn">
+                    💣 خنثی‌کننده بمب (${powerUps.bombDefuser})
+                </button>
+            </div>
+            
+            <div class="game-area" id="gameArea"></div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-success" onclick="startGame()" id="startBtn">▶️ شروع بازی</button>
+                <button class="btn btn-warning" onclick="resetGame()" id="resetBtn">🔄 ریست</button>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
+                <h4 style="color: var(--warning-color); margin-top: 0;">🎯 راهنمای بازی:</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; text-align: right;">
+                    <div>🔴 <strong>هدف قرمز:</strong> ۱۰ امتیاز</div>
+                    <div>🟡 <strong>هدف زرد:</strong> ۲۰ امتیاز + چرخش</div>
+                    <div>💣 <strong>بمب قرمز:</strong> منفی ۵۰ امتیاز</div>
+                    <div>🔵 <strong>هدف آبی:</strong> +۵ ثانیه زمان</div>
+                </div>
+                <p style="margin: 10px 0 0; color: #aaa;">برای برنده شدن باید به ۲۰۰۰ امتیاز برسید!</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('gameContainer').style.display = 'block';
     resetGame();
 }
 
 function startGame() {
     if (gameActive) return;
     
-    gameActive = true;
-    score = 0;
-    timeLeft = 30;
-    targetsHit = 0;
+    if (remainingGames <= 0) {
+        showMessage('❌ بازی‌های امروز شما تمام شده است', 'error');
+        return;
+    }
     
+    gameActive = true;
+    gameScore = 0;
+    gameTime = 60;
+    gameLevel = 1;
+    
+    // به‌روزرسانی نمایش
     updateGameDisplay();
     
+    // غیرفعال کردن دکمه شروع
     document.getElementById('startBtn').disabled = true;
-    document.getElementById('claimBtn').disabled = true;
-    
-    // پاک کردن هدف‌های قبلی
-    clearGameArea();
     
     // شروع تایمر
     gameTimer = setInterval(() => {
-        timeLeft--;
+        gameTime--;
         updateGameDisplay();
         
-        if (timeLeft <= 0) {
+        if (gameTime <= 0) {
             endGame();
         }
+        
+        // افزایش سطح در زمان‌های خاص
+        if (gameTime === 45) gameLevel = 2;
+        if (gameTime === 30) gameLevel = 3;
+        if (gameTime === 15) gameLevel = 4;
     }, 1000);
     
-    // ایجاد هدف‌های جدید
-    targetTimer = setInterval(createTarget, 800);
-    
-    // ایجاد اولین هدف
-    createTarget();
+    // ایجاد هدف‌ها
+    createTargets();
 }
 
-function createTarget() {
+function createTargets() {
     if (!gameActive) return;
     
     const gameArea = document.getElementById('gameArea');
+    const types = ['normal', 'bonus', 'bomb', 'time'];
+    const probabilities = [0.5, 0.2, 0.15, 0.15]; // احتمال هر نوع
+    
+    targetTimers.push(setInterval(() => {
+        if (!gameActive) return;
+        
+        // تعداد هدف‌ها بر اساس سطح
+        const targetCount = gameLevel + 1;
+        
+        for (let i = 0; i < targetCount; i++) {
+            createSingleTarget(gameArea, types, probabilities);
+        }
+    }, 1500 - (gameLevel * 200))); // سرعت با افزایش سطح بیشتر می‌شود
+}
+
+function createSingleTarget(gameArea, types, probabilities) {
     const target = document.createElement('div');
-    target.className = 'target';
-    target.innerHTML = '🎯';
+    const rand = Math.random();
+    let type = 'normal';
+    
+    // انتخاب نوع هدف بر اساس احتمال
+    let cumulative = 0;
+    for (let i = 0; i < types.length; i++) {
+        cumulative += probabilities[i];
+        if (rand <= cumulative) {
+            type = types[i];
+            break;
+        }
+    }
+    
+    target.className = `target target-${type}`;
+    
+    // تنظیم متن بر اساس نوع
+    switch(type) {
+        case 'normal': target.textContent = '🔴'; break;
+        case 'bonus': target.textContent = '🟡'; break;
+        case 'bomb': target.textContent = '💣'; break;
+        case 'time': target.textContent = '⏱️'; break;
+    }
     
     // موقعیت تصادفی
-    const maxX = gameArea.offsetWidth - 70;
-    const maxY = gameArea.offsetHeight - 70;
+    const maxX = gameArea.offsetWidth - 80;
+    const maxY = gameArea.offsetHeight - 80;
     const x = Math.floor(Math.random() * maxX);
     const y = Math.floor(Math.random() * maxY);
     
     target.style.left = x + 'px';
     target.style.top = y + 'px';
     
-    // اندازه تصادفی برای افزایش سختی
-    const size = 40 + Math.random() * 40;
-    target.style.width = size + 'px';
-    target.style.height = size + 'px';
-    
     // رویداد کلیک
     target.onclick = function() {
         if (!gameActive) return;
         
-        // افزایش امتیاز
-        score += 10;
-        targetsHit++;
+        let scoreChange = 0;
+        let timeChange = 0;
         
-        // بروزرسانی نمایش
-        updateGameDisplay();
+        switch(type) {
+            case 'normal':
+                scoreChange = 10 * gameLevel;
+                this.style.background = '#4CAF50';
+                this.textContent = '✅';
+                break;
+            case 'bonus':
+                scoreChange = 20 * gameLevel;
+                this.style.background = '#FF9800';
+                this.textContent = '💰';
+                break;
+            case 'bomb':
+                scoreChange = -50;
+                this.style.background = '#dc3545';
+                this.textContent = '💥';
+                showMessage('💣 بمب منفجر شد! ۵۰ امتیاز کم شد', 'error');
+                break;
+            case 'time':
+                timeChange = 5;
+                gameTime += 5;
+                this.style.background = '#2196F3';
+                this.textContent = '➕';
+                showMessage('⏱️ ۵ ثانیه زمان اضافه شد', 'info');
+                break;
+        }
+        
+        // اعمال پاورآپ
+        if (type !== 'bomb' && powerUps.doublePoints > 0) {
+            scoreChange *= 2;
+        }
+        
+        gameScore += scoreChange;
         
         // انیمیشن کلیک
         this.style.transform = 'scale(1.3)';
-        this.style.background = '#4CAF50';
-        this.innerHTML = '✅';
         
-        // حذف هدف بعد از کلیک
         setTimeout(() => {
             if (this.parentNode) {
                 this.parentNode.removeChild(this);
+                activeTargets = activeTargets.filter(t => t !== this);
             }
         }, 300);
         
+        updateGameDisplay();
+        
         // بررسی برنده شدن
-        if (score >= 1000 && !freeCPClaimed) {
-            document.getElementById('claimBtn').disabled = false;
+        if (gameScore >= 2000) {
+            winGame();
         }
     };
     
-    // حذف خودکار اگر کلیک نشد
+    // حذف خودکار بعد از ۳-۵ ثانیه
+    const lifeTime = 3000 + Math.random() * 2000;
     setTimeout(() => {
         if (target.parentNode && gameActive) {
             target.parentNode.removeChild(target);
+            activeTargets = activeTargets.filter(t => t !== target);
         }
-    }, 1500);
+    }, lifeTime);
     
     gameArea.appendChild(target);
+    activeTargets.push(target);
 }
 
-function updateGameDisplay() {
-    document.getElementById('scoreDisplay').textContent = score;
-    document.getElementById('timeDisplay').textContent = timeLeft;
-    document.getElementById('targetsDisplay').textContent = targetsHit;
-}
-
-function clearGameArea() {
-    const gameArea = document.getElementById('gameArea');
-    gameArea.innerHTML = '';
-}
-
-function endGame() {
-    gameActive = false;
-    clearInterval(gameTimer);
-    clearInterval(targetTimer);
-    document.getElementById('startBtn').disabled = false;
+function usePowerUp(type) {
+    if (!gameActive || powerUps[type] <= 0) return;
     
-    // پاک کردن همه هدف‌ها
-    clearGameArea();
-    
-    // نمایش نتیجه
-    if (score >= 1000) {
-        showMessage('🎉 تبریک! شما برنده شدید!', '#4CAF50');
-    } else {
-        showMessage(`⏰ زمان به پایان رسید! ${score} امتیاز کسب کردید.`, '#FF5722');
-    }
-}
-
-function resetGame() {
-    endGame();
-    score = 0;
-    timeLeft = 30;
-    targetsHit = 0;
-    updateGameDisplay();
-    document.getElementById('claimBtn').disabled = true;
-}
-
-function claimFreeCP() {
-    if (score >= 1000 && !freeCPClaimed) {
-        freeCPClaimed = true;
-        
-        // نمایش پیام موفقیت
-        document.getElementById('successTitle').textContent = '🎮 برنده بازی شدید!';
-        document.getElementById('successMessage').textContent = 'تبریک! شما 80 سی‌پی رایگان برنده شدید.';
-        document.getElementById('cpAmount').textContent = '🏆 80 سی‌پی رایگان';
-        document.getElementById('successModal').style.display = 'flex';
-        
-        // غیرفعال کردن دکمه
-        document.getElementById('claimBtn').disabled = true;
-        document.getElementById('claimBtn').textContent = '✅ دریافت شد';
-    }
-}
-
-// ==================== توابع خرید ====================
-function buyProduct(productName, price) {
-    const orderId = 'CP-' + Date.now().toString().slice(-8);
-    
-    // نمایش پیام موفقیت
-    document.getElementById('successTitle').textContent = '✅ خرید موفق!';
-    document.getElementById('successMessage').textContent = `${productName} با موفقیت به سبد خرید اضافه شد.`;
-    document.getElementById('cpAmount').textContent = `💰 ${price.toLocaleString('fa-IR')} تومان`;
-    document.getElementById('successModal').style.display = 'flex';
-    
-    // ساخت پیام برای ارسال به ایتا
-    const message = `🎮 **خرید سی‌پی از فروشگاه عماد**
-    
-📦 محصول: ${productName}
-💰 مبلغ: ${price.toLocaleString('fa-IR')} تومان
-🔢 کد پیگیری: ${orderId}
-⏰ زمان: ${new Date().toLocaleString('fa-IR')}
-
-✅ لطفاً این اطلاعات را برای @www_313M در ایتا ارسال کنید.`;
-    
-    // ذخیره در حافظه مرورگر
-    const order = {
-        product: productName,
-        price: price,
-        orderId: orderId,
-        date: new Date().toISOString()
-    };
-    
-    saveOrder(order);
-}
-
-function closeSuccessModal() {
-    document.getElementById('successModal').style.display = 'none';
-}
-
-function saveOrder(order) {
-    // ذخیره سفارشات در localStorage
-    const orders = JSON.parse(localStorage.getItem('cp_orders') || '[]');
-    orders.push(order);
-    localStorage.setItem('cp_orders', JSON.stringify(orders));
-    console.log('سفارش ذخیره شد:', order);
-}
-
-// ==================== توابع کمکی ====================
-function showMessage(text, color) {
-    // ایجاد پیام موقت
-    const message = document.createElement('div');
-    message.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${color};
-        color: white;
-        padding: 15px 30px;
-        border-radius: 10px;
-        z-index: 1000;
-        font-weight: bold;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        animation: slideIn 0.3s ease;
-    `;
-    message.textContent = text;
-    document.body.appendChild(message);
-    
-    setTimeout(() => {
-        message.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            if (message.parentNode) {
-                document.body.removeChild(message);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// ==================== راه‌اندازی اولیه ====================
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('بخش خرید سی‌پی بارگذاری شد');
-    
-    // اضافه کردن استایل‌های انیمیشن
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from {
-                transform: translateX(-50%) translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOut {
-            from {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(-50%) translateY(-100%);
-                opacity: 0;
-            }
-        }
-        
-        .target {
-            animation: pulse 1s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 87, 34, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 87, 34, 0); }
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // بررسی سفارشات قبلی
-    const orders = JSON.parse(localStorage.getItem('cp_orders') || '[]');
-    if (orders.length > 0) {
-        console.log('سفارشات قبلی:', orders.length);
-    }
-});
-</script>
-</body>
-</html>
+    switch(type) {
+        case 'doublePoints':
+            powerUps.doublePoints--;
+            document.getElementById('doubleBtn').textContent =

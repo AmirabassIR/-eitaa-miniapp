@@ -1,232 +1,185 @@
-<?php
-/* ================== CONFIG ================== */
-session_start();
-date_default_timezone_set('Asia/Tehran');
-
-define('ADMIN_USER', 'admin');
-define('ADMIN_PASS', '313Emad!');
-
-define('EITAA_TOKEN', 'bot428410:694cac21-5288-4cf3-8020-92ad066e8b91');
-define('EITAA_CHAT', '72430166');
-
-/* ============== STORAGE (JSON) ============== */
-function load_json($f,$d){ return file_exists($f)? json_decode(file_get_contents($f),true):$d; }
-function save_json($f,$d){ file_put_contents($f,json_encode($d,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT)); }
-
-$USERS_FILE = __DIR__.'/users.json';
-$ORDERS_FILE = __DIR__.'/orders.json';
-$PRODUCTS_FILE = __DIR__.'/products.json';
-
-$users = load_json($USERS_FILE, []);
-$orders = load_json($ORDERS_FILE, []);
-$products = load_json($PRODUCTS_FILE, [
-  ["id"=>1,"name"=>"420 CP","price"=>185000,"img"=>"https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"],
-  ["id"=>2,"name"=>"880 CP","price"=>365000,"img"=>"https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp"],
-  ["id"=>3,"name"=>"80 CP (رایگان بازی)","price"=>0,"img"=>"https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg"],
-]);
-
-/* ============== HELPERS ============== */
-function uid(){ return 'ORD-'.rand(100000,999999); }
-function today(){ return date('Y-m-d'); }
-function sendEitaa($text){
-  $url = 'https://eitaayar.ir/api/'.EITAA_TOKEN.'/sendMessage';
-  $ch = curl_init($url);
-  curl_setopt_array($ch,[
-    CURLOPT_POST=>true,
-    CURLOPT_SSL_VERIFYHOST=>0,
-    CURLOPT_SSL_VERIFYPEER=>false,
-    CURLOPT_POSTFIELDS=>['chat_id'=>EITAA_CHAT,'text'=>$text],
-    CURLOPT_RETURNTRANSFER=>true
-  ]);
-  $res = curl_exec($ch); curl_close($ch);
-  return $res;
-}
-
-/* ============== ACTIONS ============== */
-$action = $_POST['action'] ?? null;
-
-/* Register */
-if($action==='register'){
-  $u = trim($_POST['username']);
-  $p = trim($_POST['password']);
-  $name = trim($_POST['name']);
-  $phone = trim($_POST['phone']);
-  $email = trim($_POST['email']);
-  foreach($users as $x) if($x['username']===$u) die('EXISTS');
-  $users[]=[
-    "id"=>time(),"username"=>$u,"password"=>$p,"name"=>$name,
-    "phone"=>$phone,"email"=>$email,
-    "gamesToday"=>0,"lastDay"=>today()
-  ];
-  save_json($USERS_FILE,$users);
-  $_SESSION['user']=$u; echo 'OK'; exit;
-}
-
-/* Login */
-if($action==='login'){
-  foreach($users as $x){
-    if($x['username']===$_POST['username'] && $x['password']===$_POST['password']){
-      $_SESSION['user']=$x['username']; echo 'OK'; exit;
-    }
-  }
-  die('FAIL');
-}
-
-/* Admin Login */
-if($action==='admin'){
-  if($_POST['u']===ADMIN_USER && $_POST['p']===ADMIN_PASS){
-    $_SESSION['admin']=1; echo 'OK'; exit;
-  } die('FAIL');
-}
-
-/* Save Order */
-if($action==='order'){
-  if(!isset($_SESSION['user'])) die('LOGIN');
-  $cart = json_decode($_POST['cart'],true);
-  $sum = 0; $lines=[];
-  foreach($cart as $c){ $sum += $c['price']*$c['qty']; $lines[]="- {$c['name']} × {$c['qty']}"; }
-  $code = uid();
-  $orders[]=[
-    "code"=>$code,"user"=>$_SESSION['user'],
-    "items"=>$cart,"total"=>$sum,"date"=>date('Y/m/d H:i'),
-    "type"=>"خرید","status"=>"در انتظار"
-  ];
-  save_json($ORDERS_FILE,$orders);
-  $msg = "📦 سفارش جدید\n🆔 $code\n🛒 اقلام:\n".implode("\n",$lines)."\n💰 مبلغ کل: ".number_format($sum)." تومان";
-  sendEitaa($msg);
-  echo 'OK'; exit;
-}
-
-/* Game Win */
-if($action==='game_win'){
-  if(!isset($_SESSION['user'])) die('LOGIN');
-  foreach($users as &$u){
-    if($u['username']===$_SESSION['user']){
-      if($u['lastDay']!==today()){ $u['gamesToday']=0; $u['lastDay']=today(); }
-      if($u['gamesToday']>=3) die('LIMIT');
-      $u['gamesToday']++;
-      save_json($USERS_FILE,$users);
-      $code = uid();
-      $orders[]=[
-        "code"=>$code,"user"=>$u['username'],
-        "items"=>[["name"=>"80 CP (رایگان بازی)","qty"=>1,"price"=>0]],
-        "total"=>0,"date"=>date('Y/m/d H:i'),
-        "type"=>"بازی رایگان","status"=>"در انتظار"
-      ];
-      save_json($ORDERS_FILE,$orders);
-      $msg="🎮 برد بازی!\n🆔 $code\n🎁 80 CP رایگان\n👤 {$u['name']}\n📞 {$u['phone']}";
-      sendEitaa($msg);
-      echo 'OK'; exit;
-    }
-  }
-}
-
-/* Admin Updates */
-if($action==='set_price' && isset($_SESSION['admin'])){
-  foreach($products as &$p) if($p['id']==$_POST['id']) $p['price']=(int)$_POST['price'];
-  save_json($PRODUCTS_FILE,$products); echo 'OK'; exit;
-}
-
-/* ================== UI ================== */
-?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>فروش CP | امـاد</title>
-<style>
-body{font-family:tahoma;background:#0b1020;color:#fff;margin:0}
-header{background:#000c;border-bottom:2px solid #2196f3;padding:10px;text-align:center}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;padding:15px}
-.card{background:#0009;border:1px solid #2196f3;border-radius:12px;padding:12px;text-align:center}
-.card img{width:80px;height:80px;border-radius:50%}
-.btn{background:#2196f3;border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer}
-#cart{position:fixed;left:10px;bottom:10px;background:#000c;border-radius:12px;padding:10px}
-canvas{background:#111;border:2px solid #4caf50;border-radius:10px}
-.admin{background:#000a;padding:10px;margin:10px;border-radius:10px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سی‌پی شاپ | CP Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{
+      margin:0;
+      font-family:'Vazirmatn',sans-serif;
+      background:#0b0f1a;
+      color:#fff;
+    }
+    header{
+      background:#05070d;
+      border-bottom:2px solid #ff3d00;
+      padding:15px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    header h1{margin:0;color:#ff3d00;font-size:26px}
+    header .cart{font-size:18px}
+    .container{padding:20px}
+
+    .categories{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+      gap:15px;
+      margin-bottom:30px;
+    }
+    .category{
+      background:#0f1424;
+      border:1px solid #1f294a;
+      border-radius:14px;
+      padding:15px 10px;
+      text-align:center;
+      cursor:pointer;
+      transition:0.3s;
+    }
+    .category:hover{border-color:#ff3d00;transform:translateY(-4px)}
+    .category img{
+      width:60px;
+      height:60px;
+      border-radius:50%;
+      object-fit:cover;
+      margin-bottom:8px;
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+    }
+    .card{
+      background:#0f1424;
+      border:1px solid #1f294a;
+      border-radius:14px;
+      padding:15px;
+      text-align:center;
+      box-shadow:0 0 15px #000;
+    }
+    .card img{
+      width:100%;
+      height:160px;
+      object-fit:cover;
+      border-radius:10px;
+      margin-bottom:10px;
+    }
+    .card h3{margin:8px 0;font-size:18px}
+    .price{color:#00e5ff;font-size:20px;font-weight:bold}
+    .btn{
+      margin-top:10px;
+      background:#ff3d00;
+      border:none;
+      border-radius:25px;
+      padding:10px 15px;
+      color:#fff;
+      font-size:15px;
+      cursor:pointer;
+      width:100%;
+    }
+    .btn:hover{background:#e63600}
+    footer{
+      text-align:center;
+      padding:15px;
+      background:#05070d;
+      border-top:1px solid #1f294a;
+      margin-top:30px;
+      font-size:14px;
+      color:#aaa;
+    }
+  </style>
 </head>
 <body>
 
 <header>
-<h2>فروش CP کالاف | امـاد</h2>
-<button class="btn" onclick="showLogin()">ورود/ثبت‌نام</button>
-<button class="btn" onclick="showGame()">🎮 بازی CP رایگان</button>
+  <h1>سی‌پی شاپ</h1>
+  <div class="cart">🛒 سبد خرید: <span id="cartCount">0</span></div>
 </header>
 
-<div class="grid" id="products">
-<?php foreach($products as $p): ?>
-<div class="card">
-<img src="<?=$p['img']?>">
-<h4><?=$p['name']?></h4>
-<div><?=number_format($p['price'])?> تومان</div>
-<button class="btn" onclick='addCart(<?=json_encode($p)?>)'>افزودن</button>
+<div class="container">
+  <div class="categories" id="categories"></div>
+  <div class="products" id="products"></div>
 </div>
-<?php endforeach; ?>
 </div>
 
-<div id="cart">
-<b>سبد خرید</b>
-<div id="cartItems"></div>
-<button class="btn" onclick="checkout()">ثبت نهایی</button>
-</div>
-
-<!-- Game -->
-<div id="game" style="display:none;text-align:center;padding:15px">
-<canvas id="cv" width="300" height="150"></canvas><br>
-<button class="btn" onclick="start()">شروع</button>
-</div>
+<footer>
+  © 2025 CP Shop – Designed for GitHub Pages
+</footer>
 
 <script>
-let cart=[];
-function addCart(p){
-  let f=cart.find(x=>x.id===p.id);
-  if(f) f.qty++; else cart.push({...p,qty:1});
-  renderCart();
-}
-function renderCart(){
-  let d=document.getElementById('cartItems'); d.innerHTML='';
-  cart.forEach(c=> d.innerHTML+=`${c.name} × ${c.qty}<br>`);
-}
-function checkout(){
-  fetch('',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-  body:'action=order&cart='+encodeURIComponent(JSON.stringify(cart))})
-  .then(r=>r.text()).then(t=>alert(t==='OK'?'سفارش ثبت شد':'ابتدا وارد شوید'));
-}
+  const categories = [
+    {
+      id: 'codm',
+      title: 'کالاف دیوتی',
+      img: 'https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg'
+    },
+    {
+      id: 'offers',
+      title: 'آفر ویژه',
+      img: 'https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp'
+    },
+    {
+      id: 'free',
+      title: 'CP رایگان',
+      img: 'https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg'
+    }
+  ];
 
-/* Game Runner (simple) */
-let cv=document.getElementById('cv'),ctx=cv.getContext('2d'),x=20,y=110,v=0,obs=300,score=0,run=false;
-function start(){run=true;score=0;loop();}
-document.addEventListener('click',()=>{ if(y>=110)v=-8; });
-function loop(){
- if(!run)return;
- ctx.clearRect(0,0,300,150);
- v+=0.5; y+=v; if(y>110){y=110;v=0}
- obs-=3; if(obs<0){obs=300;score+=100}
- ctx.fillRect(x,y,10,10); ctx.fillRect(obs,110,10,10);
- if(Math.abs(obs-x)<10 && Math.abs(y-110)<10){ run=false; alert('باختی'); return; }
- if(score>=2000){
-   run=false;
-   fetch('',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=game_win'})
-   .then(r=>r.text()).then(t=>alert(t==='OK'?'بردی! سفارش ثبت شد':'محدودیت روزانه'));
-   return;
- }
- requestAnimationFrame(loop);
-}
-function showGame(){document.getElementById('game').style.display='block';}
-function showLogin(){alert('ثبت‌نام/ورود در نسخه نهایی تکمیلی است (بک‌اند آماده است).');}
+  const products=[
+    {id:1,cat:'codm',name:'80 + 80 CP کالاف',price:29000,img:'https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg'},
+    {id:2,cat:'codm',name:'420 CP کالاف',price:185000,img:'https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp'},
+    {id:3,cat:'offers',name:'880 CP آفر ویژه',price:365000,img:'https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp'},
+    {id:4,cat:'offers',name:'2000 + 2000 CP',price:3699000,img:'https://rengogame.com/wp-content/uploads/2025/08/cp-fori-call-of-duty-mobile-2025.webp'},
+    {id:5,cat:'free',name:'80 CP رایگان (بازی)',price:0,img:'https://rengogame.com/wp-content/uploads/2023/09/cp2x-codm-rengogame.jpg'}
+  ];
+
+  let cart=0;
+  const productBox=document.getElementById('products');
+  const categoryBox=document.getElementById('categories');
+  const cartCount=document.getElementById('cartCount');
+
+  function renderCategories(){
+    categoryBox.innerHTML='';
+    categories.forEach(c=>{
+      const d=document.createElement('div');
+      d.className='category';
+      d.innerHTML=`<img src="${c.img}"><div>${c.title}</div>`;
+      d.onclick=()=>filterCategory(c.id);
+      categoryBox.appendChild(d);
+    });
+  }
+
+  function renderProducts(list){
+    productBox.innerHTML='';
+    list.forEach(p=>{
+      const div=document.createElement('div');
+      div.className='card';
+      div.innerHTML=`
+        <img src="${p.img}">
+        <h3>${p.name}</h3>
+        <div class="price">${p.price.toLocaleString()} تومان</div>
+        <button class="btn" onclick="addToCart()">افزودن به سبد</button>
+      `;
+      productBox.appendChild(div);
+    });
+  }
+
+  function filterCategory(cat){
+    renderProducts(products.filter(p=>p.cat===cat));
+  }
+
+  function addToCart(){
+    cart++;
+    cartCount.textContent=cart;
+  }
+
+  renderCategories();
+  renderProducts(products);
 </script>
-
-<?php if(isset($_SESSION['admin'])): ?>
-<div class="admin">
-<h3>پنل ادمین</h3>
-<h4>سفارش‌ها</h4>
-<pre><?=json_encode($orders,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT)?></pre>
-<h4>کاربران</h4>
-<pre><?=json_encode($users,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT)?></pre>
-</div>
-<?php endif; ?>
 
 </body>
 </html>
